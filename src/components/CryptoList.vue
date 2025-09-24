@@ -13,6 +13,7 @@ interface Crypto {
 const cryptoList = ref<Crypto[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+const isDummyData = ref(false)
 
 onMounted(async () => {
   try {
@@ -24,9 +25,19 @@ onMounted(async () => {
       name: id.charAt(0).toUpperCase() + id.slice(1),
       price: data.usd,
     }))
+    isDummyData.value = false
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'Failed to fetch crypto data'
     console.error('Error fetching crypto data:', err)
+    // Use dummy data as fallback
+    cryptoList.value = [
+      {
+        id: 'bitcoin',
+        name: 'Bitcoin',
+        price: 100000,
+      },
+    ]
+    isDummyData.value = true
+    error.value = null
   } finally {
     loading.value = false
   }
@@ -47,7 +58,11 @@ onMounted(async () => {
               <div class="crypto-name">{{ crypto.name.toUpperCase() }}:</div>
               <div class="crypto-price">${{ crypto.price.toLocaleString() }}</div>
             </div>
-            <p>Data from CoinGecko</p>
+            <p v-if="isDummyData" class="crypto-dummy-data">
+              📡 CoinGecko API unavailable - showing demo data<br />
+              <span style="color: #fbbf24">Please try again later</span>
+            </p>
+            <p v-else>Data from CoinGecko</p>
           </div>
 
           <ProfitCalculator :currentPrice="crypto.price" />
@@ -108,6 +123,10 @@ onMounted(async () => {
   font-size: 2rem;
   font-weight: 600;
   color: white;
+}
+
+.crypto-dummy-data {
+  color: #ef4444;
 }
 
 @media (min-width: 768px) {
