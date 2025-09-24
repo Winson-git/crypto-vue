@@ -6,7 +6,7 @@ import CryptoList from '../components/CryptoList.vue'
 <template>
   <main>
     <Hero
-      backgroundImage="/public/background.png"
+      backgroundImage="/background.png"
       title="Bitcoin Calculator"
       subtitle="Calculate your crypto portfolio value and see how your investments are performing."
     />
